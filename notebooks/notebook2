@@ -1,0 +1,23 @@
+import sagemaker
+from sagemaker.inputs import TrainingInput
+from sagemaker.estimator import Estimator
+
+session = sagemaker.Session()
+role = sagemaker.get_execution_role()
+bucket = "churn-prediction-telecom"
+
+xgb_estimator = Estimator(
+    image_uri=sagemaker.image_uris.retrieve("xgboost", session.boto_region_name, version="1.5-1"),
+    role=role,
+    instance_count=1,
+    instance_type="ml.m5.large",
+    output_path=f"s3://{bucket}/output",
+    sagemaker_session=session,
+)
+
+xgb_estimator.set_hyperparameters(objective="binary:logistic", num_round=100)
+
+train_input = TrainingInput(f"s3://{bucket}/train", content_type="csv")
+validation_input = TrainingInput(f"s3://{bucket}/validation", content_type="csv")
+
+xgb_estimator.fit({"train": train_input, "validation": validation_input})
