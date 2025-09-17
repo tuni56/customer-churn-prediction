@@ -53,3 +53,4 @@ deploy.create_endpoint()
 
 *Includes load testing scripts in `/stress-tests` for 10k RPS scenarios*  
 
+## 🚀 If you found it interesting give it a star
